@@ -28,7 +28,7 @@ import raphtalia from "../../assets/raphtalia-pan.jpg";
       },
     ];
   };
-
+//hola
 
 export default function Home(props) {
   const [status, setStatus] = useState([]);
