@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,22 +11,35 @@ import {
 } from "react-native";
 import raphtalia from "../../assets/raphtalia-pan.jpg";
 
-export default function Home(props) {
-  const ListImages = [
-    {
-      nombre: "Raphtalia",
-      uri: "https://k62.kn3.net/taringa/5/4/D/6/E/D/Drk-zero/1B1.jpg",
-    },
-    {
-      nombre: "Juan",
-      uri: "https://static.wikia.nocookie.net/mamarre-estudios-espanol/images/a/a3/FB_IMG_1596591789564.jpg/revision/latest/top-crop/width/360/height/450?cb=20200806023457&path-prefix=es",
-    },
-    {
-      nombre: "Ete sech",
-      uri: "https://pbs.twimg.com/profile_images/1316588508170117121/I2LRtmYv_400x400.jpg",
-    },
-  ];
 
+  const APiData = () => {
+    return [
+      {
+        nombre: "Raphtalia",
+        uri: "https://k62.kn3.net/taringa/5/4/D/6/E/D/Drk-zero/1B1.jpg",
+      },
+      {
+        nombre: "Juan",
+        uri: "https://static.wikia.nocookie.net/mamarre-estudios-espanol/images/a/a3/FB_IMG_1596591789564.jpg/revision/latest/top-crop/width/360/height/450?cb=20200806023457&path-prefix=es",
+      },
+      {
+        nombre: "Ete sech",
+        uri: "https://pbs.twimg.com/profile_images/1316588508170117121/I2LRtmYv_400x400.jpg",
+      },
+    ];
+  };
+
+
+export default function Home(props) {
+  const [status, setStatus] = useState([]);
+  
+  useEffect(() => {
+    const response = APiData();
+    setStatus(response);
+  }, []);
+
+
+  console.log("Aqui estan mis datos", status);
   return (
     <ImageBackground
       source={{
@@ -34,9 +47,9 @@ export default function Home(props) {
       }}
       style={PrimerStyle.ImgBack}
     >
-        <ScrollView>
-      <View>
-          {ListImages.map((item, index) => (
+      <ScrollView>
+        <View>
+          {status.map((item, index) => (
             <View style={PrimerStyle.Center} key={index}>
               <Text style={PrimerStyle.Title}>{item.nombre}</Text>
               <Image source={{ uri: item.uri }} style={PrimerStyle.Size} />
@@ -55,8 +68,8 @@ export default function Home(props) {
               </TouchableOpacity>
             </View>
           ))}
-      </View>
-        </ScrollView>
+        </View>
+      </ScrollView>
     </ImageBackground>
   );
 }
