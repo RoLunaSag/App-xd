@@ -11,7 +11,6 @@ import {
   StatusBar,
   TouchableOpacity,
 } from "react-native";
-import raphtalia from "./assets/raphtalia-pan.jpg";
 import Router from "./src/navigation/Router";
 
 const App = () => {
