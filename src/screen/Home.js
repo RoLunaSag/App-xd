@@ -5,41 +5,55 @@ import {
   View,
   Image,
   ImageBackground,
-  Button,
-  ScrollView,
-  TouchableOpacity,
+  SafeAreaView,
+  ActivityIndicator,
+  FlatList,
 } from "react-native";
+
+import Imagecard from "../components/imagecard";
 import raphtalia from "../../assets/raphtalia-pan.jpg";
 
+import { getChampions } from "../apiService/ApiService";
 
-  const APiData = () => {
-    return [
-      {
-        nombre: "Raphtalia",
-        uri: "https://k62.kn3.net/taringa/5/4/D/6/E/D/Drk-zero/1B1.jpg",
-      },
-      {
-        nombre: "Juan",
-        uri: "https://static.wikia.nocookie.net/mamarre-estudios-espanol/images/a/a3/FB_IMG_1596591789564.jpg/revision/latest/top-crop/width/360/height/450?cb=20200806023457&path-prefix=es",
-      },
-      {
-        nombre: "Ete sech",
-        uri: "https://pbs.twimg.com/profile_images/1316588508170117121/I2LRtmYv_400x400.jpg",
-      },
-    ];
-  };
-//hola
+// const APiData = () => {
+//   return [
+//     {
+//       nombre: "Raphtalia",
+//       uri: "https://k62.kn3.net/taringa/5/4/D/6/E/D/Drk-zero/1B1.jpg",
+//     },
+//     {
+//       nombre: "Juan",
+//       uri: "https://static.wikia.nocookie.net/mamarre-estudios-espanol/images/a/a3/FB_IMG_1596591789564.jpg/revision/latest/top-crop/width/360/height/450?cb=20200806023457&path-prefix=es",
+//     },
+//     {
+//       nombre: "Ete sech",
+//       uri: "https://pbs.twimg.com/profile_images/1316588508170117121/I2LRtmYv_400x400.jpg",
+//     },
+//   ];
+// };
+// //hola
 
 export default function Home(props) {
-  const [status, setStatus] = useState([]);
-  
-  useEffect(() => {
-    const response = APiData();
-    setStatus(response);
+  const [status, setStatus] = useState();
+
+  useEffect(async () => {
+    try {
+      const _champions = await getChampions();
+      let ListChampios = _champions.data ?? [];
+      setStatus([ListChampios]);
+      if (status == undefined) {
+        return _champions;
+      }
+    } catch (e) {
+      console.log(`Porque fallo??? `, e);
+    }
   }, []);
 
+  console.log("Aqui estan mis gatos ========> ", status);
 
-  console.log("Aqui estan mis datos", status);
+  if (status == undefined) {
+    return <ActivityIndicator style={'large'} color={'#555555'} />;
+  }
   return (
     <ImageBackground
       source={{
@@ -47,31 +61,31 @@ export default function Home(props) {
       }}
       style={PrimerStyle.ImgBack}
     >
-      <ScrollView>
-        <View>
-          {status.map((item, index) => (
-            <View style={PrimerStyle.Center} key={index}>
-              <Text style={PrimerStyle.Title}>{item.nombre}</Text>
-              <Image source={{ uri: item.uri }} style={PrimerStyle.Size} />
-              <Button
-                color="green"
-                title=":d"
-                onPress={() =>
-                  props.navigation.navigate("Collection", { item })
-                }
-              />
-              <TouchableOpacity
-                onPress={() => console.log("Boton pro xd")}
-                style={PrimerStyle.ButtonOp}
-              >
-                <Text style={{ color: "#fff" }}>Boton pro</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+      <View style={{ width: "100%", height: "100%" }}>
+        <SafeAreaView>
+          <FlatList
+            data={status}
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <Imagecard onPress={() => props.navigation.navigate("Collection", { item })} key={index.toString()} />
+            )}
+          />
+        </SafeAreaView>
+      </View>
     </ImageBackground>
   );
+}
+
+{
+  /* <Imagecard
+key={index.toString()}
+  onPress={() =>
+    props.navigation.navigate("Collection", { item })
+  }
+  source={{ uri: item.image.sprite }}
+  title={item.id}
+  subTitle={item.title}
+/>  */
 }
 
 const PrimerStyle = StyleSheet.create({
