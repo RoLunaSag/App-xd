@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   FlatList,
+  ScrollView,
 } from "react-native";
 
 import Imagecard from "../components/imagecard";
@@ -15,22 +16,25 @@ import raphtalia from "../../assets/raphtalia-pan.jpg";
 
 import { getChampions } from "../apiService/ApiService";
 
-// const APiData = () => {
-//   return [
-//     {
-//       nombre: "Raphtalia",
-//       uri: "https://k62.kn3.net/taringa/5/4/D/6/E/D/Drk-zero/1B1.jpg",
-//     },
-//     {
-//       nombre: "Juan",
-//       uri: "https://static.wikia.nocookie.net/mamarre-estudios-espanol/images/a/a3/FB_IMG_1596591789564.jpg/revision/latest/top-crop/width/360/height/450?cb=20200806023457&path-prefix=es",
-//     },
-//     {
-//       nombre: "Ete sech",
-//       uri: "https://pbs.twimg.com/profile_images/1316588508170117121/I2LRtmYv_400x400.jpg",
-//     },
-//   ];
-// };
+const APiData = () => {
+  return [
+    {
+      nombre: "Raphtalia",
+      uri: "https://k62.kn3.net/taringa/5/4/D/6/E/D/Drk-zero/1B1.jpg",
+      title: "Un anime",
+    },
+    {
+      nombre: "Juan",
+      uri: "https://static.wikia.nocookie.net/mamarre-estudios-espanol/images/a/a3/FB_IMG_1596591789564.jpg/revision/latest/top-crop/width/360/height/450?cb=20200806023457&path-prefix=es",
+      title: "el Caballo",
+    },
+    {
+      nombre: "Ete sech",
+      uri: "https://pbs.twimg.com/profile_images/1316588508170117121/I2LRtmYv_400x400.jpg",
+      title: "El meme",
+    },
+  ];
+};
 // //hola
 
 export default function Home(props) {
@@ -38,22 +42,21 @@ export default function Home(props) {
 
   useEffect(async () => {
     try {
-      const _champions = await getChampions();
-      let ListChampios = _champions.data ?? [];
-      setStatus([ListChampios]);
-      if (status == undefined) {
-        return _champions;
-      }
+      setStatus(await getChampions());
     } catch (e) {
       console.log(`Porque fallo??? `, e);
     }
   }, []);
 
-  console.log("Aqui estan mis gatos ========> ", status);
+  // useEffect(() => {
+  //   const resp = APiData();
+  //   setStatus(resp);
+  // }, []);
 
-  if (status == undefined) {
-    return <ActivityIndicator style={'large'} color={'#555555'} />;
-  }
+  if (status != undefined) {
+    // console.log("Aqui estan mis gatos ========> ", Object.values(status.data));
+  } else return <ActivityIndicator style={"large"} color={"#555555"} />;
+
   return (
     <ImageBackground
       source={{
@@ -62,15 +65,33 @@ export default function Home(props) {
       style={PrimerStyle.ImgBack}
     >
       <View style={{ width: "100%", height: "100%" }}>
-        <SafeAreaView>
-          <FlatList
-            data={status}
+        <ScrollView>
+          {Object.values(status.data).map((item, index) => (
+            <Imagecard
+              key={item.id}
+              title={item.id}
+              subTitle={item.blurb}
+              source={{uri : `http://ddragon.leagueoflegends.com/cdn/11.23.1/img/champion/${item.id}.png`}}
+              onPress={() => props.navigation.navigate("Collection", { item })}
+            />
+          ))}
+
+          {/* <FlatList
+            data={Object.keys(status.data)}
             keyExtractor={(_, index) => index.toString()}
             renderItem={({ item, index }) => (
-              <Imagecard onPress={() => props.navigation.navigate("Collection", { item })} key={index.toString()} />
+              <Imagecard
+                key={index.toString()}
+                // source={{ uri: item.uri }}
+                 title={item}
+                // subTitle={item.title}
+                onPress={() =>
+                  props.navigation.navigate("Collection", { item })
+                }
+              />
             )}
-          />
-        </SafeAreaView>
+          /> */}
+        </ScrollView>
       </View>
     </ImageBackground>
   );
